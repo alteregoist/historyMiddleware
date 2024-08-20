@@ -1,0 +1,24 @@
+{
+    "name": "zhistory",
+    "version": "0.0.1",
+    "description": "zustand middleware for managing history using immerjs patches.",
+    "keywords": [
+        "zustand",
+        "history",
+        "undo",
+        "redo",
+        "immer",
+        "patches"
+    ],
+    "main": "./dist/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Insoo Kim<alterego77@gmail.com>",
+    "license": "ISC",
+    "devDependencies": {
+        "immer": "^10.1.1",
+        "typescript": "^5.5.4",
+        "zustand": "^4.5.5"
+    }
+}
