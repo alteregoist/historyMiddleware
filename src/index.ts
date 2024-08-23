@@ -25,6 +25,8 @@ type ImmerStateCreator<T> = (
 export const withHistory = <T extends object>(
     create: ImmerStateCreator<T>
 ): StateCreator<StateWithHistory<T>, [], []> => (set, get, originalStore) => {
+    // recipe에서 undefined가 발생해서 immerProducer check 하지 말고 stateProducer check 하도록 함
+    /*
     const isImmerProducer = (fn: ((state: T) => T | Partial<T>) | ((draft: Draft<T>) => void)): boolean => {
         try {
             // If we invoke it and it returns undefined, it's probably an Immer producer
@@ -35,9 +37,23 @@ export const withHistory = <T extends object>(
             return false;
         }
     };
+    */
+
+    const isStateProducer = (fn: ((state: T) => T | Partial<T>) | ((draft: Draft<T>) => void)): boolean => {
+        try {
+            // We create a proxy or a shallow copy of the state to test the function
+            const testState = {} as T & Draft<T>;
+            const result = fn(testState);
+            // If the function returns something, it’s likely a state producer
+            return result !== undefined;
+        } catch (e) {
+            // If an error occurs (e.g., accessing properties on undefined), assume it’s not a state producer
+            return false;
+        }
+    };
 
     const immerSet = (fn: SetStateAction<T>, replace?: boolean): void => {
-        if (typeof fn === 'function' && isImmerProducer(fn)) {
+        if (typeof fn === 'function' && !isStateProducer(fn)) {
             const [nextState, patches, inversePatches] = produceWithPatches(get(), fn as (draft: Draft<T>) => void);
             set((state) => ({
                 ...nextState,
